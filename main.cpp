@@ -1,7 +1,5 @@
 #include "Trie.h"
 #include "Map.h"
-#include "MapIncident.h"
-
 #include <iostream>
 #include <fstream>
 #include <string>
