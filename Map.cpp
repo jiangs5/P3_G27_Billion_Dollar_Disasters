@@ -1,10 +1,14 @@
 #include <map>
-#include <sstream>
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <utility>
 #include "Map.h"
 using namespace std; 
+
+bool compareByFirstElement(const std::vector<int>& a, const std::vector<int>& b) {
+    return a[0] < b[0];
+}
 
 void disasterMap::addRow()
 {
@@ -44,7 +48,7 @@ void disasterMap::addRow()
                 stateCountyWord.first = columns[8]; 
                 stateCountyWord.second = columns[10]; 
                 state_county.insert(make_pair(stateCountyID, stateCountyWord));
-
+                state_county_string.insert(make_pair(stateCountyWord, stateCountyID));
             }
             index_to_disaster[stateCountyID].emplace_back(disaster_info); 
         }
@@ -55,5 +59,18 @@ void disasterMap::addRow()
 
 void disasterMap::sort_index_to_disaster(string county, string state) // sorts the disasters for the selected county and state from least to most expensive
 {
-    
+    pair<string, string> currCounty; 
+    currCounty.first = state; 
+    currCounty.second = county; 
+
+    if(state_county_string.find(currCounty) == state_county_string.end())
+    {
+        cout << "This county is not in our database. " << endl; 
+        return; 
+    }
+    else{
+        pair<int, int> currCountyID = state_county_string[currCounty]; 
+        vector<vector<int> > currVector = index_to_disaster[currCounty]; 
+        std::sort(currVector.begin(), currVector.end(), compareByFirstElement);
+    }
 }
