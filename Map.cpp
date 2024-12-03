@@ -69,7 +69,7 @@ void disasterMap::sort_index_to_disaster(string county, string state) // sorts t
     }
     else{
         pair<int, int> currCountyID = state_county_string[currCounty]; 
-        vector<MapIncident> currVector = index_to_disaster[currCounty]; 
+        vector<MapIncident> currVector = index_to_disaster[currCountyID]; 
         std::sort(currVector.begin(), currVector.end(), compareByFirstElement);
     }
 }
