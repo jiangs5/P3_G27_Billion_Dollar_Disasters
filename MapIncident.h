@@ -7,11 +7,11 @@ using namespace std;
 class MapIncident {
 
 private:
+public:
     int cost; 
     string disasterType; 
     string date; 
     string damageCategory; 
-public:
     MapIncident(int _cost, string _disasterType, string _date, string _damageCategory)
     {
         cost = _cost; 
@@ -28,4 +28,6 @@ public:
     bool operator<(const MapIncident& other) const {
         return cost < other.cost; // Compare by cost
     }
+
+
 };
