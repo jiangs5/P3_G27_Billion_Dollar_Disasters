@@ -5,32 +5,45 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace std;
+
+// Class to represent disaster details
+class Disaster {
+public:
+    string type;  // Disaster type (e.g., Hurricane, Severe Storm)
+    double projectAmount;  // Project cost
+    string declarationDate;  // Disaster declaration date
+
+    Disaster(const string& type, double projectAmount, const string& declarationDate)
+        : type(type), projectAmount(projectAmount), declarationDate(declarationDate) {}
+};
+
+// Trie class for organizing data by state and county
 class Trie {
 private:
-    // Node structure
     struct TrieNode {
-        std::unordered_map<char, TrieNode*> children;
-        bool isEndOfWord;
+        unordered_map<string, TrieNode*> children;  // State/County hierarchy
+        vector<Disaster> disasters;  // List of disasters for a county
 
-        TrieNode() : isEndOfWord(false) {}
+        ~TrieNode() {
+            for (auto& child : children) {
+                delete child.second;
+            }
+        }
     };
 
-    TrieNode* root;
+    TrieNode* root;  // Root of the Trie
 
-    // Helper function for recursion in cleanup
+    // Helper function to clean up memory
     void cleanup(TrieNode* node);
-
-    // Helper function to collect words for autocomplete
-    void collectAllWords(TrieNode* node, std::string prefix, std::vector<std::string>& words);
 
 public:
     Trie();
     ~Trie();
 
-    void insert(const std::string& word);
-    bool search(const std::string& word) const;
-    bool startsWith(const std::string& prefix) const;
-    std::vector<std::string> autocomplete(const std::string& prefix);
+    void insert(const string& state, const string& county, const Disaster& disaster);
+    vector<Disaster> search(const string& state, const string& county) const;
+    void addData(const string& csvFilePath);  // Read from CSV file and populate
 };
 
 #endif  // TRIE_H

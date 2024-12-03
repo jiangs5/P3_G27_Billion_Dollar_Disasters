@@ -1,4 +1,9 @@
 #include "Trie.h"
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+using namespace std;
 
 // Constructor
 Trie::Trie() {
@@ -18,66 +23,71 @@ void Trie::cleanup(TrieNode* node) {
     delete node;
 }
 
-// Insert a word into the Trie
-void Trie::insert(const std::string& word) {
-    TrieNode* current = root;
-    for (char c : word) {
-        if (current->children.find(c) == current->children.end()) {
-            current->children[c] = new TrieNode();
-        }
-        current = current->children[c];
-    }
-    current->isEndOfWord = true;
-}
-
-// Search for a word in the Trie
-bool Trie::search(const std::string& word) const {
-    TrieNode* current = root;
-    for (char c : word) {
-        if (current->children.find(c) == current->children.end()) {
-            return false;
-        }
-        current = current->children[c];
-    }
-    return current->isEndOfWord;
-}
-
-// Check if there is any word in the Trie that starts with the given prefix
-bool Trie::startsWith(const std::string& prefix) const {
-    TrieNode* current = root;
-    for (char c : prefix) {
-        if (current->children.find(c) == current->children.end()) {
-            return false;
-        }
-        current = current->children[c];
-    }
-    return true;
-}
-
-// Autocomplete: Get all words that start with a given prefix
-std::vector<std::string> Trie::autocomplete(const std::string& prefix) {
-    std::vector<std::string> results;
+// Insert a disaster into the Trie
+void Trie::insert(const string& state, const string& county, const Disaster& disaster) {
     TrieNode* current = root;
 
-    // Navigate to the end of the prefix
-    for (char c : prefix) {
-        if (current->children.find(c) == current->children.end()) {
-            return results;  // Prefix not found
-        }
-        current = current->children[c];
+    // Navigate or create state node
+    if (current->children.find(state) == current->children.end()) {
+        current->children[state] = new TrieNode();
     }
+    current = current->children[state];
 
-    // Collect all words starting from this node
-    collectAllWords(current, prefix, results);
-    return results;
+    // Navigate or create county node
+    if (current->children.find(county) == current->children.end()) {
+        current->children[county] = new TrieNode();
+    }
+    current = current->children[county];
+
+    // Add disaster to the county
+    current->disasters.push_back(disaster);
 }
 
-// Helper function to collect all words for autocomplete
-void Trie::collectAllWords(TrieNode* node, std::string prefix, std::vector<std::string>& words) {
-    if (node->isEndOfWord) {
-        words.push_back(prefix);
+// Search for disasters in a specific state and county
+vector<Disaster> Trie::search(const string& state, const string& county) const {
+    TrieNode* current = root;
+
+    if (current->children.find(state) == current->children.end()) {
+        return {};  // State not found
     }
-    for (auto& pair : node->children) {
-        collectAllWords(pair.second, prefix + pair.first, words);
+    current = current->children.at(state);
+
+    if (current->children.find(county) == current->children.end()) {
+        return {};  // County not found
     }
+    current = current->children.at(county);
+
+    return current->disasters;
+}
+
+// Parse CSV file and populate the Trie
+void Trie::addData(const string& csvFilePath) {
+    ifstream file(csvFilePath);
+    if (!file.is_open()) {
+        cerr << "Error: Unable to open CSV file " << csvFilePath << "\n";
+        return;
+    }
+
+    string line;
+    getline(file, line);  // Skip the header row
+
+    while (getline(file, line)) {
+        istringstream ss(line);
+        string disasterNumber, declarationDate, incidentType, county, state, projectAmountStr;
+        double projectAmount;
+
+        // Parse relevant columns
+        getline(ss, disasterNumber, ',');  // Skip columns
+        getline(ss, declarationDate, ',');
+        getline(ss, incidentType, ',');
+        for (int i = 0; i < 5; ++i) getline(ss, county, ',');  // Skip intermediate columns
+        getline(ss, state, ',');
+        for (int i = 0; i < 4; ++i) getline(ss, projectAmountStr, ',');  // Skip columns
+        projectAmount = stod(projectAmountStr);
+
+        // Insert into Trie
+        insert(state, county, Disaster(incidentType, projectAmount, declarationDate));
+    }
+
+    file.close();
 }
