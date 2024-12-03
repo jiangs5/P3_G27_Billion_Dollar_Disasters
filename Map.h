@@ -6,12 +6,12 @@ using namespace std;
 class disasterMap {
 
 private:
-    vector<pair <pair<int, int>, pair<string, string> > > state_county; 
-    map<vector<pair <int, int> >, vector<vector<int> > >index_to_disaster; // first vector: IDs of state and county, second vector: cost, type, other info for each FEMA grant
+    map<pair<int, int>, pair<string, string> >  state_county; 
+    map<pair <int, int> , vector<vector<int> > >index_to_disaster; // first vector: IDs of state and county, second vector: cost, type, other info for each FEMA grant
 public:
-    disasterMap() = default;
+    disasterMap(); 
 
     void addRow(); 
-    void 
+    void sort_index_to_disaster(string county, string state); 
 };
 
