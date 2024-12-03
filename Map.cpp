@@ -6,8 +6,8 @@
 #include "Map.h"
 using namespace std; 
 
-bool compareByFirstElement(const std::vector<int>& a, const std::vector<int>& b) {
-    return a[0] < b[0];
+bool compareByFirstElement(const MapIncident& a, const MapIncident& b) {
+    return a < b;
 }
 
 void disasterMap::addRow()
@@ -31,12 +31,10 @@ void disasterMap::addRow()
             columns.push_back(token);
         }
 
-        // Ensure the columns J (index 9) and L (index 11) exist
-        if (columns.size() > 11) {
+        if (columns.size() > 13) {
             int county_id = stoi(columns[9]); // Column J
             int state_id = stoi(columns[11]); // Column L
-            vector<int> disaster_info; 
-            disaster_info.emplace_back(stoi(columns[13]), stoi(columns[0])); // [0] is the disaster number, [13] is the disaster cost
+            MapIncident currIncident = MapIncident(stoi(columns[13]), columns[2], columns[1], columns[18]);  // [13] is the disaster cost, [2] is cost, [1] is date, [18] is 
 
 
             // Add pair to vector
@@ -50,7 +48,7 @@ void disasterMap::addRow()
                 state_county.insert(make_pair(stateCountyID, stateCountyWord));
                 state_county_string.insert(make_pair(stateCountyWord, stateCountyID));
             }
-            index_to_disaster[stateCountyID].emplace_back(disaster_info); 
+            index_to_disaster[stateCountyID].emplace_back(currIncident); 
         }
     }
 
@@ -70,7 +68,7 @@ void disasterMap::sort_index_to_disaster(string county, string state) // sorts t
     }
     else{
         pair<int, int> currCountyID = state_county_string[currCounty]; 
-        vector<vector<int> > currVector = index_to_disaster[currCounty]; 
+        vector<MapIncident> currVector = index_to_disaster[currCounty]; 
         std::sort(currVector.begin(), currVector.end(), compareByFirstElement);
     }
 }
