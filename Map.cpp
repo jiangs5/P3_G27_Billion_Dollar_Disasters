@@ -14,13 +14,12 @@ bool compareByFirstElement(const MapIncident& a, const MapIncident& b) {
 void Map::addRow()
 {
     pair<int, int> stateCountyID;
-    string filename = "TrimmedData.csv";
+    string filename = "/Users/bdang/Downloads/COP3530/Project3Bv4/Project3Bv4/TrimmedData.csv";
     ifstream file(filename);
     if (!file.is_open()) {
         cout << "Failed to open the file." << endl;
     }
     string line;
-
 
     // Read the header line if it exists
     getline(file, line); // Skip header (optional)
@@ -41,7 +40,7 @@ void Map::addRow()
             {
             int county_id = stoi(columns[9]); // Column J
             int state_id = stoi(columns[12]); // Column L
-            MapIncident currIncident = MapIncident(stod(columns[13]), columns[2], columns[1], columns[18]);  // [13] is the disaster cost, [2] is cost, [1] is date, [18] is
+            MapIncident currIncident = MapIncident(stod(columns[13]), columns[2], columns[1], columns[18]);  // [13] is the disaster cost, [2] is type, [1] is date, [18] is type
 
 
             // Add pair to vector
@@ -93,14 +92,18 @@ void Map::sort_index_to_disaster(string county, string state) {
     currCounty.first = state;
     currCounty.second = county;
 
-    // Check if the county exists in the map
     if (state_county_string.find(currCounty) == state_county_string.end()) {
         cout << "This county is not in our database." << endl;
         return;
     } else {
+        // Retrieve the county ID from the map
         pair<int, int> currCountyID = state_county_string[currCounty];
+        // Retrieve the vector of disasters associated with the county
         vector<MapIncident>& currVector = index_to_disaster[currCountyID];
+
         // Sort the vector in place (from least to most expensive)
         sort(currVector.begin(), currVector.end(), compareByFirstElement);
+
+        // Update the map with the sorted vector (implicitly done since we are using reference to the vector)
     }
 }

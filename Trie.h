@@ -44,6 +44,7 @@ public:
     void insert(const string& state, const string& county, const Disaster& disaster);
     vector<Disaster> search(const string& state, const string& county) const;
     void addData(const string& csvFilePath);  // Read from CSV file and populate
+    void sortDisasters(const string& state, const string& county);
 };
 
 #endif  // TRIE_H

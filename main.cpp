@@ -7,8 +7,8 @@
 #include <cctype>
 
 using namespace std;
-int main() { 
-    
+int main() {
+
     //County input validation
     string countyName;
     bool validInput = false;
@@ -44,57 +44,93 @@ int main() {
     cout << "Sorting disasters for " << countyName << ", " << state << "..." << endl;
     myDisasterMap.sort_index_to_disaster(countyName, state);
     //Using Trie data structure
-    
-    return 0; 
+
+    return 0;
 }
 */
 
 #include <iostream>
 #include <string>
+#include <chrono>
 #include "Map.h"
+#include "Trie.h"
 
 using namespace std;
 
 int main() {
-    disasterMap myDisasterMap;
+    auto start = chrono::high_resolution_clock::now();
+    Map myDisasterMap;
 
     // Load data from the CSV file
     cout << "Loading disaster data..." << endl;
     myDisasterMap.addRow();
     cout << "Data loaded successfully!" << endl;
 
-    
-
-    // Test case: Provide a state and county to sort
-    string state, county;
-    cout << "Enter the name of a state: ";
-    getline(cin, state);
-    cout << "Enter the name of a county: ";
-    getline(cin, county);
-
+    string state = "Arizona";
+    string county = "Statewide";
     // Sort disasters for the given state and county
     cout << "Sorting disasters for " << county << ", " << state << "..." << endl;
     myDisasterMap.sort_index_to_disaster(county, state);
 
-    // Print sorted disasters
-    cout << "Sorted disasters (if available):" << endl;
-    pair<string, string> countyKey; 
-    countyKey.first = state; 
-    countyKey.second =  county; 
+    cout << "Sorted disasters (if available) with Map DS:" << endl;
+    pair<string, string> countyKey;
+    countyKey.first = state;    // Use the state from the user input
+    countyKey.second = county;  // Use the county from the user input
 
     // Check if the county exists in the map
     if (myDisasterMap.state_county_string.find(countyKey) != myDisasterMap.state_county_string.end()) {
         pair<int, int> countyID = myDisasterMap.state_county_string[countyKey];
         vector<MapIncident>& disasters = myDisasterMap.index_to_disaster[countyID];
 
+        int i = 1; // To count incidents displayed
         for (const auto& incident : disasters) {
-            cout << "Date: " << incident.date
+            if (i >= 11) {
+                break; // Stop after 10 incidents
+            }
+
+            cout << i << ". Date: " << incident.date
                  << ", Cost: " << incident.cost
                  << ", Description: " << incident.disasterType << endl;
+            i++; // Increment the counter
         }
-    } else {
+    }
+    else {
         cout << "No disasters found for this county and state." << endl;
     }
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    cout << "Time taken with Map DS: " << duration.count() << endl;
+
+
+    auto startTrie = chrono::high_resolution_clock::now();
+    Trie myTrie;
+    cout << "Loading disaster data..." << endl;
+    myTrie.addData("/Users/bdang/Downloads/COP3530/Project3Bv4/Project3Bv4/TrimmedData.csv");
+    myTrie.sortDisasters(state, county);
+
+    vector<Disaster> disasters = myTrie.search(state, county);
+    cout << "Sorted disasters (if available) with Trie DS:" << endl;
+    if(disasters.size() > 0)
+    {
+        int i = 1;
+        for (const auto& incident : disasters) {
+            if (i > 10) {
+                break; // Stop after 10 incidents
+            }
+
+            cout << i << ". Date: " << incident.declarationDate;
+            cout << ", Cost: " << incident.projectAmount;
+            cout << ", Description: " << incident.type << endl;
+            i++; // Increment the counter
+        }
+    }
+    else {
+        cout << "No disasters found for this county and state." << endl;
+    }
+
+    auto stopTrie = chrono::high_resolution_clock::now();
+    auto durationTrie = std::chrono::duration_cast<std::chrono::microseconds>(stopTrie - startTrie);
+    cout << "Time taken with Trie DS: " << durationTrie.count() << endl;
 
     return 0;
 }
