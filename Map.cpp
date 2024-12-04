@@ -38,25 +38,25 @@ void Map::addRow()
         if (columns.size() > 13) {
             try
             {
-            int county_id = stoi(columns[9]); // Column J
-            int state_id = stoi(columns[12]); // Column L
-            MapIncident currIncident = MapIncident(stod(columns[13]), columns[2], columns[1], columns[18]);  // [13] is the disaster cost, [2] is type, [1] is date, [18] is type
+                int county_id = stoi(columns[9]); // Column J
+                int state_id = stoi(columns[12]); // Column L
+                MapIncident currIncident = MapIncident(stod(columns[13]), columns[2], columns[1], columns[18]);  // [13] is the disaster cost, [2] is type, [1] is date, [18] is type
 
 
-            // Add pair to vector
-            pair<int, int> StateCountyID;
-            stateCountyID.first = state_id;
-            stateCountyID.second = county_id;
-            if(state_county.find(stateCountyID) == state_county.end()) // checks whether the state and county are already in the map; if it is not, it executes the code
-            {
-                pair<string, string> stateCountyWord;
-                stateCountyWord.first = columns[10]; //state name
-                stateCountyWord.second = columns[8]; // county name
-                state_county.insert(make_pair(stateCountyID, stateCountyWord));
-                state_county_string.insert(make_pair(stateCountyWord, stateCountyID));
-            }
+                // Add pair to vector
+                pair<int, int> StateCountyID;
+                stateCountyID.first = state_id;
+                stateCountyID.second = county_id;
+                if(state_county.find(stateCountyID) == state_county.end()) // checks whether the state and county are already in the map; if it is not, it executes the code
+                {
+                    pair<string, string> stateCountyWord;
+                    stateCountyWord.first = columns[10]; //state name
+                    stateCountyWord.second = columns[8]; // county name
+                    state_county.insert(make_pair(stateCountyID, stateCountyWord));
+                    state_county_string.insert(make_pair(stateCountyWord, stateCountyID));
+                }
 
-            index_to_disaster[stateCountyID].emplace_back(currIncident);
+                index_to_disaster[stateCountyID].emplace_back(currIncident);
             }
             catch(const exception& e)
             {

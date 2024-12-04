@@ -66,8 +66,8 @@ int main() {
     myDisasterMap.addRow();
     cout << "Data loaded successfully!" << endl;
 
-    string state = "Arizona";
-    string county = "Statewide";
+    string state = "Florida";
+    string county = "Orange County";
     // Sort disasters for the given state and county
     cout << "Sorting disasters for " << county << ", " << state << "..." << endl;
     myDisasterMap.sort_index_to_disaster(county, state);
