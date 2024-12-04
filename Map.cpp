@@ -11,7 +11,7 @@ bool compareByFirstElement(const MapIncident& a, const MapIncident& b) {
     return a < b;
 }
 
-void disasterMap::addRow()
+void Map::addRow()
 {
     pair<int, int> stateCountyID; 
     string filename = "TrimmedPublicAssistanceFundedProjectsDetails.csv";
@@ -56,7 +56,7 @@ void disasterMap::addRow()
     file.close();
 }
 
-void disasterMap::sort_index_to_disaster(string county, string state) // sorts the disasters for the selected county and state from least to most expensive
+void Map::sort_index_to_disaster(string county, string state) // sorts the disasters for the selected county and state from least to most expensive
 {
     pair<string, string> currCounty; 
     currCounty.first = state; 
